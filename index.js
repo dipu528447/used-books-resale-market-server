@@ -20,7 +20,8 @@ client.connect(err => {
 
   async function run(){
     try {
-        const collection = client.db("used-books-resale-market").collection("users");
+        const users = client.db("used-books-resale-market").collection("users");
+        const categories = client.db("used-books-resale-market").collection("categories");
         app.post('/jwt',(req,res)=>{
             console.log(req.body.email)
             const currentUSer=req.body;
@@ -29,32 +30,39 @@ client.connect(err => {
         })
 
         app.post('/addUser', async (req, res) => {
-      
             const newUser = req.body;
             console.log(newUser)
-            const result = await collection.insertOne(newUser);
+            const result = await users.insertOne(newUser);
             res.send(result);
           });
 
-          app.get('/getUsers', async (req,res)=>{
-            let query={}
-            console.log(req.query.email)
-            if(req.query.email){
-                query={
-                    email:req.query.email
-                }
-            }
-            const cursor=collection.find(query);
-            const result=await cursor.toArray();
-            console.log(result);
-            res.send(result)
-          })
+        app.get('/getUsers', async (req,res)=>{
+          let query={}
+          console.log(req.query.email)
+          if(req.query.email){
+              query={
+                  email:req.query.email
+              }
+          }
+          const cursor=users.find(query);
+          const result=await cursor.toArray();
+          console.log(result);
+          res.send(result)
+        })
+
+        app.get('/categories', async (req,res)=>{
+          let query={}
+          const cursor=categories.find(query);
+          const result=await cursor.toArray();
+          console.log(result);
+          res.send(result)
+        })
         app.get('/', async (req,res)=>{
-            // const query={};
-            // const cursor=db.find(query);
-            // const service=await cursor.limit(3).toArray();
-            res.send("hello world")
-          })
+          // const query={};
+          // const cursor=db.find(query);
+          // const service=await cursor.limit(3).toArray();
+          res.send("hello world")
+        })
       
         
     } catch (error) {
