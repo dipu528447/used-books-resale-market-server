@@ -22,6 +22,7 @@ client.connect(err => {
     try {
         const users = client.db("used-books-resale-market").collection("users");
         const categories = client.db("used-books-resale-market").collection("categories");
+        const products = client.db("used-books-resale-market").collection("products");
         app.post('/jwt',(req,res)=>{
             console.log(req.body.email)
             const currentUSer=req.body;
@@ -54,6 +55,25 @@ client.connect(err => {
           let query={}
           const cursor=categories.find(query);
           const result=await cursor.toArray();
+          console.log(result);
+          res.send(result)
+        })
+
+        app.get('/category/:id', async (req,res)=>{
+          const {id}=req.params;
+          console.log(id)
+          const query={category_id:id};
+          const cursor=products.find(query);
+          const result=await cursor.toArray();
+          console.log(result);
+          res.send(result)
+        })
+
+        app.get('/user/:email', async (req,res)=>{
+          const {email}=req.params;
+          let query={email:email}
+          
+          const result=await users.findOne(query);
           console.log(result);
           res.send(result)
         })
