@@ -37,6 +37,13 @@ client.connect(err => {
             res.send(result);
           });
 
+          app.post('/addProduct', async (req, res) => {
+            const newProduct = req.body;
+            console.log(newProduct)
+            const result = await products.insertOne(newProduct);
+            res.send(result);
+          });
+
         app.get('/getUsers', async (req,res)=>{
           let query={}
           console.log(req.query.email)
