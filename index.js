@@ -24,7 +24,7 @@ client.connect(err => {
         const categories = client.db("used-books-resale-market").collection("categories");
         const products = client.db("used-books-resale-market").collection("products");
         app.post('/jwt',(req,res)=>{
-            console.log(req.body.email)
+            // console.log(req.body.email)
             const currentUSer=req.body;
             const token=jwt.sign(currentUSer,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1h'})
             res.send({token})
@@ -32,14 +32,14 @@ client.connect(err => {
 
         app.post('/addUser', async (req, res) => {
             const newUser = req.body;
-            console.log(newUser)
+            // console.log(newUser)
             const result = await users.insertOne(newUser);
             res.send(result);
           });
 
           app.post('/addProduct', async (req, res) => {
             const newProduct = req.body;
-            console.log(newProduct)
+            // console.log(newProduct)
             const result = await products.insertOne(newProduct);
             res.send(result);
           });
@@ -54,25 +54,33 @@ client.connect(err => {
           }
           const cursor=users.find(query);
           const result=await cursor.toArray();
-          console.log(result);
+          // console.log(result);
           res.send(result)
         })
-
+        app.get('/myproducts/:email',async(req,res)=>{
+          const {email}=req.params;
+          // console.log(email)
+          const query={seller_id:email}
+          const cursor=products.find(query);
+          const result=await cursor.toArray();
+          res.send(result)
+        })
+        
         app.get('/categories', async (req,res)=>{
           let query={}
           const cursor=categories.find(query);
           const result=await cursor.toArray();
-          console.log(result);
+          // console.log(result);
           res.send(result)
         })
 
         app.get('/category/:id', async (req,res)=>{
           const {id}=req.params;
-          console.log(id)
+          // console.log(id)
           const query={category_id:id};
           const cursor=products.find(query);
           const result=await cursor.toArray();
-          console.log(result);
+          // console.log(result);
           res.send(result)
         })
 
@@ -81,9 +89,28 @@ client.connect(err => {
           let query={email:email}
           
           const result=await users.findOne(query);
-          console.log(result);
+          // console.log(result);
           res.send(result)
         })
+        app.delete('/product/:id', async(req,res)=>{
+          const id=req.params.id;
+          const filter={_id:ObjectId(id)}
+          const result=await products.deleteOne(filter);
+          res.send(result)
+        })
+        app.put('/product/:id', async (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: ObjectId(id) }
+          const options = { upsert: true };
+          const updatedDoc = {
+              $set: {
+                  advertize: '1'
+              }
+          }
+          const result = await products.updateOne(filter, updatedDoc, options);
+          res.send(result);
+      });
+
         app.get('/', async (req,res)=>{
           // const query={};
           // const cursor=db.find(query);
