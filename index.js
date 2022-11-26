@@ -65,7 +65,20 @@ client.connect(err => {
           const result=await cursor.toArray();
           res.send(result)
         })
-        
+        app.get('/advertise',async(req,res)=>{
+          
+          const query={advertize:"1", status:"1"}
+          const cursor=products.find(query);
+          const result=await cursor.toArray();
+          res.send(result)
+        })
+        app.get('/gallery',async(req,res)=>{
+          
+          const query={ status:"1" }
+          const cursor=products.find(query);
+          const result=await cursor.toArray();
+          res.send(result)
+        })
         app.get('/categories', async (req,res)=>{
           let query={}
           const cursor=categories.find(query);
