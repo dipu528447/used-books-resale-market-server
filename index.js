@@ -23,6 +23,7 @@ client.connect(err => {
         const users = client.db("used-books-resale-market").collection("users");
         const categories = client.db("used-books-resale-market").collection("categories");
         const products = client.db("used-books-resale-market").collection("products");
+        const orders=client.db("used-books-resale-market").collection("orders");
         app.post('/jwt',(req,res)=>{
             // console.log(req.body.email)
             const currentUSer=req.body;
@@ -43,6 +44,12 @@ client.connect(err => {
             const result = await products.insertOne(newProduct);
             res.send(result);
           });
+          app.post('/addOrder', async (req, res) => {
+            const newProduct = req.body;
+            // console.log(newProduct)
+            const result = await orders.insertOne(newProduct);
+            res.send(result);
+          });
 
         app.get('/getUsers', async (req,res)=>{
           let query={}
@@ -60,8 +67,20 @@ client.connect(err => {
         app.get('/myproducts/:email',async(req,res)=>{
           const {email}=req.params;
           // console.log(email)
-          const query={seller_id:email}
+          const query={seller_id:email,status:"1"}
           const cursor=products.find(query);
+          const result=await cursor.toArray();
+          if(result){
+            res.send(result)
+          }
+          
+          
+        })
+        app.get('/myorder/:email',async(req,res)=>{
+          const {email}=req.params;
+          // console.log(email)
+          const query={buyer_id:email}
+          const cursor=orders.find(query);
           const result=await cursor.toArray();
           res.send(result)
         })
@@ -109,6 +128,12 @@ client.connect(err => {
           const id=req.params.id;
           const filter={_id:ObjectId(id)}
           const result=await products.deleteOne(filter);
+          res.send(result)
+        })
+        app.delete('/order/:id', async(req,res)=>{
+          const id=req.params.id;
+          const filter={_id:ObjectId(id)}
+          const result=await orders.deleteOne(filter);
           res.send(result)
         })
         app.put('/product/:id', async (req, res) => {
