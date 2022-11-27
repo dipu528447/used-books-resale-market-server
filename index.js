@@ -162,6 +162,12 @@ client.connect(err => {
           const result=await orders.deleteOne(filter);
           res.send(result)
         })
+        app.delete('/deleteUser/:id', async(req,res)=>{
+          const id=req.params.id;
+          const filter={_id:ObjectId(id)}
+          const result=await users.deleteOne(filter);
+          res.send(result)
+        })
         app.put('/product/:id', async (req, res) => {
           const id = req.params.id;
           const filter = { _id: ObjectId(id) }
@@ -175,6 +181,18 @@ client.connect(err => {
           res.send(result);
       });
 
+        app.put('/verify/:id', async (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: ObjectId(id) }
+          const options = { upsert: true };
+          const updatedDoc = {
+              $set: {
+                  verified: '1'
+              }
+          }
+          const result = await users.updateOne(filter, updatedDoc, options);
+          res.send(result);
+      });
         app.get('/', async (req,res)=>{
           // const query={};
           // const cursor=db.find(query);
