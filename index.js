@@ -32,8 +32,18 @@ client.connect(err => {
         })
 
         app.post('/addUser', async (req, res) => {
+
+            
             const newUser = req.body;
             // console.log(newUser)
+            const query={
+              email:newUser.email
+            }
+            const alreadySignin=await users.findOne(query)
+            console.log(alreadySignin)
+            if(alreadySignin?.email){
+              return res.send('')
+            }
             const result = await users.insertOne(newUser);
             res.send(result);
           });
@@ -53,7 +63,7 @@ client.connect(err => {
 
         app.get('/getUsers', async (req,res)=>{
           let query={}
-          console.log(req.query.email)
+          // console.log(req.query.email)
           if(req.query.email){
               query={
                   email:req.query.email
@@ -111,6 +121,22 @@ client.connect(err => {
           // console.log(id)
           const query={category_id:id};
           const cursor=products.find(query);
+          const result=await cursor.toArray();
+          // console.log(result);
+          res.send(result)
+        })
+        app.get('/allSellers', async (req,res)=>{
+          
+          const query={type:'seller'};
+          const cursor=users.find(query);
+          const result=await cursor.toArray();
+          // console.log(result);
+          res.send(result)
+        })
+        app.get('/allBuyers', async (req,res)=>{
+          
+          const query={type:'buyer'};
+          const cursor=users.find(query);
           const result=await cursor.toArray();
           // console.log(result);
           res.send(result)
