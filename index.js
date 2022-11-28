@@ -77,7 +77,7 @@ client.connect(err => {
         app.get('/myproducts/:email',async(req,res)=>{
           const {email}=req.params;
           // console.log(email)
-          const query={seller_id:email,status:"1"}
+          const query={seller_id:email}
           const cursor=products.find(query);
           const result=await cursor.toArray();
           if(result){
@@ -119,7 +119,7 @@ client.connect(err => {
         app.get('/category/:id', async (req,res)=>{
           const {id}=req.params;
           // console.log(id)
-          const query={category_id:id};
+          const query={category_id:id,status:'1'};
           const cursor=products.find(query);
           const result=await cursor.toArray();
           // console.log(result);
@@ -158,13 +158,15 @@ client.connect(err => {
         })
         app.delete('/order/:id', async(req,res)=>{
           const id=req.params.id;
+          
           const filter={_id:ObjectId(id)}
           const result=await orders.deleteOne(filter);
+          console.log(result)
           res.send(result)
         })
-        app.delete('/deleteUser/:id', async(req,res)=>{
-          const id=req.params.id;
-          const filter={_id:ObjectId(id)}
+        app.delete('/deleteUser/:email', async(req,res)=>{
+          const email=req.params.email;
+          const filter={email:email}
           const result=await users.deleteOne(filter);
           res.send(result)
         })
@@ -180,10 +182,42 @@ client.connect(err => {
           const result = await products.updateOne(filter, updatedDoc, options);
           res.send(result);
       });
-
-        app.put('/verify/:id', async (req, res) => {
+      app.get('/paynow/:product_id',async(req,res)=>{
+        const id=req.params.product_id;
+        console.log(id)
+        const query={id:id, status:'0'};
+        const result=await orders.findOne(query);
+        console.log(result)
+        res.send(result)
+        
+      })
+      app.put('/paynow/:id', async (req, res) => {
           const id = req.params.id;
           const filter = { _id: ObjectId(id) }
+          const options = { upsert: true };
+          const updatedDoc = {
+              $set: {
+                  status: '0'
+              }
+          }
+          const result = await orders.updateOne(filter, updatedDoc, options);
+          res.send(result);
+        });
+        app.put('/unavailable/:id', async (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: ObjectId(id) }
+          const options = { upsert: true };
+          const updatedDoc = {
+              $set: {
+                  status: '0'
+              }
+          }
+          const result = await products.updateOne(filter, updatedDoc, options);
+          res.send(result);
+        });
+        app.put('/verify/:email', async (req, res) => {
+          const email = req.params.email;
+          const filter = { email: email }
           const options = { upsert: true };
           const updatedDoc = {
               $set: {
