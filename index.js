@@ -2,12 +2,17 @@ const express= require('express');
 const cors=require('cors');
 const app=express();
 require('dotenv').config()
-const jwt=require('jsonwebtoken');
+// const jwt=require('jsonwebtoken');
 const port=process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 app.use(express());
-app.use(cors());
+const corsOptions ={
+  origin:'*',
+  credentials:true,
+  optionSuccessStatus:200,
+  }
+app.use(cors(corsOptions))
 
 app.use(express.json());
 
@@ -24,12 +29,12 @@ client.connect(err => {
         const categories = client.db("used-books-resale-market").collection("categories");
         const products = client.db("used-books-resale-market").collection("products");
         const orders=client.db("used-books-resale-market").collection("orders");
-        app.post('/jwt',(req,res)=>{
-            // console.log(req.body.email)
-            const currentUSer=req.body;
-            const token=jwt.sign(currentUSer,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1h'})
-            res.send({token})
-        })
+        // app.post('/jwt',(req,res)=>{
+        //     // console.log(req.body.email)
+        //     const currentUSer=req.body;
+        //     const token=jwt.sign(currentUSer,process.env.ACCESS_TOKEN_SECRET,{expiresIn:'1h'})
+        //     res.send({token})
+        // })
 
         app.post('/addUser', async (req, res) => {
 
